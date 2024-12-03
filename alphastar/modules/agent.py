@@ -104,14 +104,14 @@ class AlphaStarAgent(Agent):
     self._unroll_fun = unroll_fun
 
   def initial_state(self,
-                    rng_key: jax.random.KeyArray,
+                    rng_key: jax.random.PRNGKey,
                     batch_size: int) -> types.StreamDict:
     """Sets initial state for the agent."""
     init_params = self._initial_state_fun.init(rng_key, batch_size)
     return self._initial_state_fun.apply(init_params, rng_key, batch_size)
 
   def init(self,
-           rng_key: jax.random.KeyArray,
+           rng_key: jax.random.PRNGKey,
            inputs: types.StreamDict,
            prev_state: types.StreamDict) -> hk.Params:
     """Returns the initial parameters for the agent."""
@@ -121,7 +121,7 @@ class AlphaStarAgent(Agent):
 
   def apply(self,
             params: hk.Params,
-            rng_key: jax.random.KeyArray,
+            rng_key: jax.random.PRNGKey,
             inputs: types.StreamDict,
             prev_state: types.StreamDict) -> modular.UnrollOutputType:
     """Performs forward step of an agent."""

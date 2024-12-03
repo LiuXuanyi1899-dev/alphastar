@@ -8,3 +8,4 @@ pandas
 jax>=0.2.26
 jaxlib
 dm-pix
+numpy<2.0

@@ -171,35 +171,38 @@ def get_optimizer(
   optimizers = []
 
   if weight_decay:
-    mask_fns = [weight_decay_filters[x] for x in weight_decay_filter_out]
-    if extra_weight_decay_mask_fn:
-      mask_fns.append(extra_weight_decay_mask_fn)
-    def mask_fn(params):
-      all_masks = [f(params) for f in mask_fns]
-      if all_masks:
-        output = jax.tree_map(lambda *masks: all(masks), *all_masks)
-      else:
-        output = jax.tree_map(lambda _: True, params)
-      logging.info('Using weight decay filter:\n%s', output)
-      return output
-    weight_decay = optax.masked(
-        inner=optax.additive_weight_decay(weight_decay),
-        mask=mask_fn)
+      mask_fns = [weight_decay_filters[x] for x in weight_decay_filter_out]
+      if extra_weight_decay_mask_fn:
+          mask_fns.append(extra_weight_decay_mask_fn)
+
+      def mask_fn(params):
+          all_masks = [f(params) for f in mask_fns]
+          if all_masks:
+              output = jax.tree_map(lambda *masks: all(masks), *all_masks)
+          else:
+              output = jax.tree_map(lambda _: True, params)
+          logging.info('Using weight decay filter:\n%s', output)
+          return output
+
+      # Use `optax.add_decayed_weights` instead of the old `additive_weight_decay`
+      weight_decay = optax.masked(
+          inner=optax.add_decayed_weights(weight_decay),
+          mask=mask_fn)
   else:
-    weight_decay = None
+      weight_decay = None
 
   if weight_decay and not use_adamw:
-    optimizers.append(weight_decay)
+      optimizers.append(weight_decay)
   if before_adam_gradient_clipping_norm:
-    optimizers.append(optax.clip_by_global_norm(
-        before_adam_gradient_clipping_norm))
+      optimizers.append(optax.clip_by_global_norm(
+          before_adam_gradient_clipping_norm))
   optimizers.append(optax.scale_by_adam(
       b1=adam_b1, b2=adam_b2, eps=adam_eps))
   if weight_decay and use_adamw:
-    optimizers.append(weight_decay)
+      optimizers.append(weight_decay)
   if after_adam_gradient_clipping_norm:
-    optimizers.append(optax.clip_by_global_norm(
-        after_adam_gradient_clipping_norm))
+      optimizers.append(optax.clip_by_global_norm(
+          after_adam_gradient_clipping_norm))
 
   num_updates_before_decay = int(
       lr_frames_before_decay / num_frames_per_learner_update)

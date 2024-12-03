@@ -70,7 +70,7 @@ class SupervisedLearner(acme.Learner):
                rng_key: chex.PRNGKey,
                counter: Optional[counting.Counter] = None,
                logger: Optional[loggers.Logger] = None,
-               devices: Optional[Sequence[jax.xla.Device]] = None,
+               devices: Optional[Sequence[jax.Device]] = None,
                increment_counts: bool = True,
                reduce_metrics_all_devices: bool = False,
                log_every_n_seconds: int = 60,

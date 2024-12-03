@@ -100,7 +100,7 @@ class Loss(abc.ABC):
         raise ValueError("Logs must be depth 2 nested dicts, "
                          f"but log {k} has type {type(v)}.")
       for inner_k, inner_v in v.items():
-        if not isinstance(inner_v, chex.Array):
+        if not isinstance(inner_v, jax.Array):
           raise ValueError("Logs must be depth 2 nested dicts, "
                            f"but log {k}/{inner_k} has type {type(inner_v)}.")
         if inner_v.shape != (unroll_len,):

@@ -1,19 +1,3 @@
-# Copyright 2021 DeepMind Technologies Limited.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Metrics related functions."""
-
 import functools
 from typing import Callable, Dict, List, Optional, Tuple
 
@@ -23,11 +7,11 @@ import jax
 import jax.numpy as jnp
 
 
-def pnanreduce(x: jnp.DeviceArray,
-               reduce_fn: Callable[..., jnp.DeviceArray],
+def pnanreduce(x: jax.Array,
+               reduce_fn: Callable[..., jax.Array],
                axis_name: Optional[str] = None,
                axis_index_groups: Optional[List[List[int]]] = None
-               ) -> Tuple[jnp.DeviceArray, jnp.DeviceArray]:
+               ) -> Tuple[jax.Array, jax.Array]:
   """Gets the number of non-nan elements reduce them with reduce_fn.
 
   Args:
@@ -49,10 +33,10 @@ def pnanreduce(x: jnp.DeviceArray,
   return valid_num, valid_reduced
 
 
-def pnanmean(x: jnp.DeviceArray,
+def pnanmean(x: jax.Array,
              axis_name: Optional[str] = None,
              axis_index_groups: Optional[List[List[int]]] = None
-             ) -> jnp.DeviceArray:
+             ) -> jax.Array:
   """Takes mean over non-nan elements.
 
   Args:
@@ -69,11 +53,11 @@ def pnanmean(x: jnp.DeviceArray,
   return jnp.where(valid_num, valid_sum / valid_num, jnp.nan)
 
 
-def pnantake(x: jnp.DeviceArray,
-             reduce_fn: Callable[..., jnp.DeviceArray],
+def pnantake(x: jax.Array,
+             reduce_fn: Callable[..., jax.Array],
              axis_name: Optional[str] = None,
              axis_index_groups: Optional[List[List[int]]] = None
-             ) -> jnp.DeviceArray:
+             ) -> jax.Array:
   """Takes a reduction over non-nan elements.
 
   Args:
